@@ -1,73 +1,133 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# API d'article de blog
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+2 entités :
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+- User
+- Article
 
-## Description
+## Auth
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Routes :
 
-## Installation
+Création d'un compte :
 
-```bash
-$ npm install
+```
+// Request
+POST /auth/register
+{
+    "email": "thomas@durand.fr",
+    "password": "123456789",
+    "firstname": "Thomas",
+    "lastname": "Durand"
+}
+
+// Response
+{
+    "email": "thomas@durand.fr",
+    "firstname": "Thomas",
+    "lastname": "Durand",
+    "id": 7
+}
 ```
 
-## Running the app
+Authentification :
 
-```bash
-# development
-$ npm run start
+```
+// Request
+POST /auth/login
+{
+    "email": "thomas@durand.fr",
+    "password": "123456789"
+}
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+// Response
+{
+    "expires_in": 3600,
+    "access_token": "eyJhbGciOiJIUzI1NiJ9.bWFlbEB2aW5jZW50LmZy.88V_gwNWyh4qVAtSAVfmddP_p9xywhNjwPqr6fiT0p0"
+}
 ```
 
-## Test
+## API articles
 
-```bash
-# unit tests
-$ npm run test
+Lister tous les articles
 
-# e2e tests
-$ npm run test:e2e
+```
+// Request
+GET /articles
 
-# test coverage
-$ npm run test:cov
+// Response
+[
+ {
+    "id": 1,
+    "title": "Un titre",
+    "content": "Le contenu de mon article de blog"
+  }
+]
 ```
 
-## Support
+Lire un article
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```
+// Request
+GET /articles/:id
 
-## Stay in touch
+// Response
+{
+  "id": 1,
+  "title": "Un titre",
+  "content": "Le contenu de mon article de blog"
+}
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Créer un article. Il faut être authentifié en passant un access token.
 
-## License
+```
+// Request
+POST /articles
+Header:
+  Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.bWFlbEB2aW5jZW50LmZy.88V_gwNWyh4qVAtSAVfmddP_p9xywhNjwPqr6fiT0p0
 
-Nest is [MIT licensed](LICENSE).
+// Response
+{
+  "title": "Un titre",
+  "content": "Le contenu de mon article de blog"
+}
+```
+
+Mettre à jour un article. Il faut être authentifié en passant un access token.
+
+```
+// Request
+PUT /articles
+Header:
+  Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.bWFlbEB2aW5jZW50LmZy.88V_gwNWyh4qVAtSAVfmddP_p9xywhNjwPqr6fiT0p0
+
+// Response
+{
+  "id": 1,
+  "title": "Un titre",
+  "content": "Le contenu de mon article de blog"
+}
+```
+
+Supprimer un article. Il faut être authentifié en passant un access token.
+
+```
+// Request
+DELETE /articles/:id
+Header:
+  Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.bWFlbEB2aW5jZW50LmZy.88V_gwNWyh4qVAtSAVfmddP_p9xywhNjwPqr6fiT0p0
+```
+
+## Bonus
+
+Actuellement, un utilisateur authentifié peut modifier et supprimer n'importe quel article.
+Une amélioration consiste à ne permettre les modifications et suppresions que des articles dont l'utilisateur connecté est l'auteur.
+Pour récupérer l'utilisateur connecté, tu peux regarder la méthode de création d'un article du controller des articles.
+Pour émettre une erreur d'autorisation tu peux utiliser les exceptions directement incluses dans nest :
+
+```
+import { UnauthorizedException } from '@nestjs/common';
+
+throw new UnauthorizedException();
+```
